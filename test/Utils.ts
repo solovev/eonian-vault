@@ -46,8 +46,9 @@ export async function getBalance(tokenContract: unknown, address: string, asCoun
   return asCountable ? balance / Math.pow(10, tokenDecimals) : balance;
 }
 
-export async function deploy<T extends BaseContract>(name: string, ...args: any[]): Promise<T> {
-  const factory = await ethers.getContractFactory(name);
+export async function deploy<T extends BaseContract>(options: { name: string; signer?: SignerWithAddress }, ...args: any[]): Promise<T> {
+  const { name, signer } = options;
+  const factory = await ethers.getContractFactory(name, signer);
   const contract = (await factory.deploy(...args)) as T;
   await contract.deployed();
   return contract;

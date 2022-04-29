@@ -1,13 +1,12 @@
 import '@nomiclabs/hardhat-ethers';
-import { ethers, network } from 'hardhat';
+import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import { getWallet, deploy, transferFromWallet, withDecimals, executeBehalfOf, resetBlockchainAfterEach } from './Utils';
 import { MockContract, smock } from '@defi-wonderland/smock';
 import chai from 'chai';
 import { CompoundFarmingSource, ERC20, ICERC20, Vault, Vault__factory } from '../typechain-types';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { BaseContract, BigNumber, ContractTransaction } from 'ethers';
-import { forkConfig } from '../hardhat.config';
+import { BigNumber, ContractTransaction } from 'ethers';
 
 chai.use(smock.matchers);
 
@@ -339,7 +338,7 @@ describe('CompoundFarmingSource', function () {
   }
 
   async function deployFarmingSource(init = true, signer?: SignerWithAddress): Promise<CompoundFarmingSource> {
-    const farmingSource = await deploy<CompoundFarmingSource>('CompoundFarmingSource');
+    const farmingSource = await deploy<CompoundFarmingSource>({ name: 'CompoundFarmingSource' });
     if (!init) {
       return farmingSource;
     }
