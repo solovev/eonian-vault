@@ -4,14 +4,13 @@ import { expect } from 'chai';
 import { getWallet, deploy, transferFromWallet, withDecimals, executeBehalfOf, resetBlockchainAfterEach } from './Utils';
 import { MockContract, smock } from '@defi-wonderland/smock';
 import chai from 'chai';
-import { CompoundFarmingSource, ERC20, ICERC20, Vault, Vault__factory } from '../typechain-types';
+import { CompoundFarmingSource, ERC20, Vault, Vault__factory } from '../typechain-types';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BigNumber, ContractTransaction } from 'ethers';
 
 chai.use(smock.matchers);
 
 const DAI_ABI = require('./abi/dai_abi.json');
-const CDAI_ABI = require('./abi/cdai_abi.json');
 
 const addresses = {
   DAI: '0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa',
@@ -20,8 +19,6 @@ const addresses = {
 };
 
 const tokenContract = new ethers.Contract(addresses.DAI, DAI_ABI, ethers.provider) as ERC20;
-
-const cTokenContract = new ethers.Contract(addresses.cDAI, CDAI_ABI, ethers.provider) as ERC20 & ICERC20;
 
 describe('CompoundFarmingSource', function () {
   let vaultContract: MockContract<Vault>;

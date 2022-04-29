@@ -1,17 +1,36 @@
 {
+    "ts-node": {
+        "compilerOptions": {
+            "module": "commonjs"
+        }
+    },
     "compilerOptions": {
         "target": "es2018",
-        "module": "CommonJS",
+        "module": "esnext",
         "strict": true,
         "esModuleInterop": true,
         "outDir": "dist",
         "resolveJsonModule": true,
         "skipLibCheck": true,
+        "lib": [
+            "dom",
+            "dom.iterable",
+            "esnext"
+        ],
+        "allowJs": true,
+        "allowSyntheticDefaultImports": true,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "moduleResolution": "node",
+        "isolatedModules": true,
+        "noEmit": true,
+        "jsx": "react-jsx"
     },
     "include": [
         "./scripts",
         "./test",
-        "./typechain-types"
+        "./typechain-types",
+        "src"
     ],
     "files": [
         "./hardhat.config.ts"
