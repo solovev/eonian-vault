@@ -15,7 +15,7 @@ interface ICERC20 {
 
     function exchangeRateCurrent() external returns (uint256);
 
-    function supplyRatePerBlock() external returns (uint256);
+    function supplyRatePerBlock() external view returns (uint256);
 
     function redeem(uint256) external returns (uint256);
 
@@ -31,6 +31,8 @@ contract CompoundFarmingSource is BaseFarmingSource {
 
     uint256 private exchangeRate;
     uint256 private exchangeRateUpdatedAt;
+
+    event Withdraw(uint256 requiredAmount, uint256 loss);
 
     /// @notice
     ///     Recalculates current exchange rate for compound <-> underlying token.
@@ -81,7 +83,7 @@ contract CompoundFarmingSource is BaseFarmingSource {
         onlyVault
         _updateExchangeRate
         ensureExchangeRateFresh
-        returns (uint256 loss)
+        returns (uint256)
     {
         require(requiredAmount > 0, "Cannot withdraw 0");
 
@@ -100,7 +102,11 @@ contract CompoundFarmingSource is BaseFarmingSource {
         underlyingBalance = getUnderlyingTokenBalance();
         underlyingToken.safeTransfer(address(vault), underlyingBalance);
 
-        return Math.max(requiredAmount - underlyingBalance, 0);
+        uint256 loss = Math.max(requiredAmount - underlyingBalance, 0);
+
+        emit Withdraw(requiredAmount, loss);
+
+        return loss;
     }
 
     function updateExchangeRate() public {
@@ -112,6 +118,12 @@ contract CompoundFarmingSource is BaseFarmingSource {
         return getUnderlyingTokenBalance() + getSuppliedBalance();
     }
 
+    /// @dev Using for testing purposes
+    function getInterestRate() public view returns (uint256) {
+        return compoundToken.supplyRatePerBlock();
+    }
+
+    /// @dev Whe can try to use `supplyRatePerBlock` to make this computation more accurate
     function getSuppliedBalance() internal view returns (uint256) {
         uint256 underlyingDecimals = underlyingToken.decimals();
         return
