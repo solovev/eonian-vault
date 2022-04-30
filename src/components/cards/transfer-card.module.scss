@@ -1,0 +1,15 @@
+.row {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.shares {
+  font-size: 13px;
+  opacity: 0.75;
+
+  &--disabled {
+    opacity: 0.35;
+  }
+}

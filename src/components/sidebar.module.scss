@@ -1,0 +1,47 @@
+$menu-item-height: 60px;
+
+.container {
+  position: relative;
+  width: 25%;
+  align-self: stretch;
+  min-height: $menu-item-height * 5;
+  user-select: none;
+
+  background-color: var(--background-color);
+}
+
+.item {
+  position: relative;
+  height: $menu-item-height;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--background-shade-color);
+  }
+
+  &--selected::after {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: var(--accent-color);
+    content: '';
+  }
+
+  &--disabled {
+    cursor: default;
+    pointer-events: none;
+    opacity: 0.35;
+  }
+
+  img {
+    $size: calc($menu-item-height / 3);
+    width: $size;
+    height: $size;
+    margin-right: 8px;
+  }
+}
