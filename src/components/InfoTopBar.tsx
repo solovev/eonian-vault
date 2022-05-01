@@ -9,8 +9,8 @@ interface Props {
 function InfoTopBar({ startElement, endElement }: Props) {
   return (
     <div className={styles.container}>
-      {startElement}
-      {endElement && <div className={styles.end}>{endElement}</div>}
+      {startElement && <div className={styles.group}>{startElement}</div>}
+      {startElement && <div className={styles.group + ' ' + styles.end}>{endElement}</div>}
     </div>
   );
 }

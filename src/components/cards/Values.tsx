@@ -1,4 +1,6 @@
+import { observer } from 'mobx-react';
 import React from 'react';
+import store from '../../store/MainStore';
 import styles from './values.module.scss';
 
 function Values() {
@@ -42,7 +44,7 @@ function Values() {
           </tr>
           <tr>
             <td>ETH Wallet Balance</td>
-            <td>0</td>
+            <td>{store.walletEthBalance}</td>
           </tr>
           <tr>
             <td>Supply Rate</td>
@@ -54,4 +56,4 @@ function Values() {
   );
 }
 
-export default Values;
+export default observer(Values);

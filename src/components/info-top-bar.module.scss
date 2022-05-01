@@ -9,12 +9,15 @@
   }
 }
 
-.end {
+.group {
   display: flex;
   align-items: center;
-  margin-left: auto;
 
   & > * + * {
     margin-left: 10px;
   }
+}
+
+.end {
+  margin-left: auto;
 }

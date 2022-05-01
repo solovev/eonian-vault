@@ -8,46 +8,16 @@ import MetaMaskAddressInfo from './components/MetaMaskAddressInfo';
 import Loading from './components/Loading';
 import SideBar from './components/SideBar';
 import Content from './components/Content';
-import { ethers } from 'ethers';
 
-const networks: Record<number, string> = {
-  1: 'Mainnet',
-  42: 'Kovan',
-  3: 'Ropsten',
-  4: 'Rinkeby',
-  5: 'Goerli',
-};
-
-async function getBalance(address: string, provider: ethers.providers.Web3Provider) {
-  const balance = await provider.getBalance(address || 'ethers.eth');
-  console.log(ethers.utils.formatEther(balance));
-}
+import store, { ethereum } from './store/MainStore';
+import { observer } from 'mobx-react';
 
 function App() {
-  const ethereum = (window as any).ethereum;
+  const { account, network } = store;
 
-  const [network, setNetwork] = React.useState(getCache('network', ''));
-  const [accounts, setAccounts] = React.useState(getCache<string[]>('accounts', []));
-
-  const provider = React.useMemo(() => {
-    return new ethers.providers.Web3Provider(ethereum);
-  }, [ethereum]);
-
-  React.useEffect(() => {
-    getBalance(accounts[0], provider);
-  }, [provider, accounts]);
-
-  const handleAccountsChanged = React.useCallback(
-    (accounts: string[]) => {
-      cache('accounts', accounts);
-      setAccounts(accounts);
-
-      const network = networks[ethereum.networkVersion] ?? '';
-      cache('network', network);
-      setNetwork(network);
-    },
-    [ethereum, setAccounts, setNetwork],
-  );
+  const handleAccountsChanged = React.useCallback((accounts: string[]) => {
+    store.setAccounts(accounts);
+  }, []);
 
   React.useEffect(() => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
@@ -55,19 +25,27 @@ function App() {
       ethereum.on('accountsChanged', handleAccountsChanged);
       return () => ethereum.removeListener('accountsChanged', handleAccountsChanged);
     }
-  }, [ethereum, handleAccountsChanged]);
+  }, [handleAccountsChanged]);
 
-  const isConnected = React.useMemo(() => accounts.length > 0, [accounts]);
+  const isConnected = React.useMemo(() => !!account, [account]);
 
   return (
     <div className="main-container">
       <div className="sub-container">
         <InfoTopBar
-          startElement={isConnected && <BarChip text="Total balance: 0 USD" />}
+          startElement={
+            isConnected && (
+              <>
+                <BarChip text="Total Balance: 0 USD" />
+                <BarChip text="Total APY: 0 %" />
+                <BarChip text="Daily Income: 0 USD" />
+              </>
+            )
+          }
           endElement={
             <>
               {renderNetwork()}
-              <MetaMaskAddressInfo accounts={accounts} />
+              <MetaMaskAddressInfo account={account} />
             </>
           }
         ></InfoTopBar>
@@ -99,14 +77,4 @@ function App() {
   }
 }
 
-function cache<T>(key: string, value: T) {
-  const data = JSON.stringify(value);
-  window.localStorage.setItem(key, data);
-}
-
-function getCache<T>(key: string, defaultValue: T): T {
-  const data = window.localStorage.getItem(key);
-  return data ? JSON.parse(data) : defaultValue;
-}
-
-export default App;
+export default observer(App);
