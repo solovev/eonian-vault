@@ -13,7 +13,7 @@ function MetaMaskAddressInfo({ account }: Props) {
   }, [account]);
 
   return (
-    <BarChip text={address ?? 'Not connected'} title={account}>
+    <BarChip text={address || 'Not connected'} title={account}>
       <img src={metamaskIcon} alt="metamask" />
     </BarChip>
   );

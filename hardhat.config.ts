@@ -25,6 +25,12 @@ const rinkebyConfig: NetworkUserConfig = {
   ],
 };
 
+const ropstenConfig: NetworkUserConfig = {
+  url: 'https://ropsten.infura.io/v3/17233ed97597434fa2556a3b424d7d9e',
+  // 0xCc4C414D00D09aA25A8F6F12Fce61033bE2A7D22
+  accounts: ['74a9e19f1fe8f87ac9d8effc3dcc19d70935e5078ab24baa5d5e3f8988e18f7c'],
+};
+
 export const forkConfig = {
   url: 'https://speedy-nodes-nyc.moralis.io/a3b84d032f1dca31df370455/eth/rinkeby',
   blockNumber: 10544100,
@@ -33,10 +39,14 @@ export const forkConfig = {
 const config: HardhatUserConfig = {
   defaultNetwork: 'hardhat',
   networks: {
+    localhost: {
+      url: 'http://127.0.0.1:8545',
+    },
     hardhat: {
       forking: forkConfig,
     },
     rinkeby: rinkebyConfig,
+    ropsten: ropstenConfig,
     'rinkeby-local-fork': { ...rinkebyConfig, url: 'http://127.0.0.1:8545' },
   },
   etherscan: {

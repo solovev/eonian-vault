@@ -22,6 +22,10 @@ interface ICERC20 {
   function redeemUnderlying(uint256) external returns (uint256);
 
   function getCash() external view returns (uint256);
+
+  function approve(address spender, uint256 value) external returns (bool success);
+
+  function allowance(address owner, address spender) external view returns (uint256);
 }
 
 contract CompoundFarmingSource is BaseFarmingSource {

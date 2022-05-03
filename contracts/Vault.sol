@@ -5,6 +5,7 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import '@openzeppelin/contracts/utils/math/Math.sol';
 import './sources/BaseFarmingSource.sol';
 import './interfaces/IVault.sol';
 
@@ -14,6 +15,8 @@ contract Vault is ERC20, IVault, Ownable {
   BaseFarmingSource private farmingSource;
 
   IERC20 private underlyingToken;
+
+  event Withdraw(uint256 requiredAmount, uint256 loss);
 
   constructor(address _token)
     ERC20(string(abi.encodePacked("Eonian's ", ERC20(_token).name())), string(abi.encodePacked('eon', ERC20(_token).symbol())))
@@ -50,21 +53,29 @@ contract Vault is ERC20, IVault, Ownable {
   function withdraw(uint256 amount) external override ensureFarmingSourceSet {
     uint256 shares = getShares(amount);
     uint256 senderBalance = balanceOf(msg.sender);
+
+    uint256 amountToWithdraw = amount;
     if (senderBalance < shares) {
       shares = senderBalance;
-      amount = getValueOfShares(shares);
+      amountToWithdraw = getValueOfShares(shares);
     }
 
     _burn(msg.sender, shares);
 
+    uint256 loss = 0;
     uint256 vaultBalance = getVaultBalance();
-    if (amount > vaultBalance) {
-      uint256 amountNeeded = amount - vaultBalance;
-      uint256 loss = farmingSource.withdraw(amountNeeded);
-      require(loss <= 0, 'TODO: Compensate missing amount');
+    if (amountToWithdraw > vaultBalance) {
+      uint256 amountNeeded = amountToWithdraw - vaultBalance;
+      loss = farmingSource.withdraw(amountNeeded);
     }
 
-    underlyingToken.safeTransfer(address(this), amount);
+    vaultBalance = getVaultBalance();
+    amountToWithdraw = Math.min(amountToWithdraw, vaultBalance);
+
+    // TODO: Compensate missing amount
+    underlyingToken.safeTransfer(address(msg.sender), amountToWithdraw);
+
+    emit Withdraw(amountToWithdraw, loss);
   }
 
   function getValueOfShares(uint256 shares) public view returns (uint256) {

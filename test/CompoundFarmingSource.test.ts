@@ -1,12 +1,12 @@
 import '@nomiclabs/hardhat-ethers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { getWallet, deploy, transferFromWallet, withDecimals, executeBehalfOf, resetBlockchainAfterEach } from './Utils';
+import { getWallet, deploy, transferFromWallet, withDecimals, executeBehalfOf, resetBlockchainAfterEach, getWithdrawEvent } from './Utils';
 import { MockContract, smock } from '@defi-wonderland/smock';
 import chai from 'chai';
 import { CompoundFarmingSource, ERC20, Vault, Vault__factory } from '../typechain-types';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { BigNumber, ContractTransaction } from 'ethers';
+import { BigNumber } from 'ethers';
 
 chai.use(smock.matchers);
 
@@ -312,18 +312,6 @@ describe('CompoundFarmingSource', function () {
   // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   // -=-=-=-=-=- TEST HELPERS -=-=-=-=-=-=
   // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-  async function getWithdrawEvent(txn: ContractTransaction): Promise<[number, number]> {
-    const receipt = await txn.wait();
-    if (!receipt) {
-      return [-1, -1];
-    }
-    const event = receipt.events?.find((event) => event.event === 'Withdraw');
-    if (!event) {
-      return [-1, -1];
-    }
-    return event.args as [number, number];
-  }
 
   async function supply(address: string, amount: number): Promise<BigNumber> {
     return await transferFromWallet({

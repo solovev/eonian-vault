@@ -36,9 +36,9 @@ function App() {
           startElement={
             isConnected && (
               <>
-                <BarChip text="Total Balance: 0 USD" />
-                <BarChip text="Total APY: 0 %" />
-                <BarChip text="Daily Income: 0 USD" />
+                <BarChip text={`Total Balance: ${store.totalBalance} USD`} />
+                <BarChip text={`Total APY: ${store.apy} %`} />
+                <BarChip text={`Daily Income: ${store.dailyIncome} USD`} />
               </>
             )
           }

@@ -69,7 +69,7 @@ describe('Vault', function () {
   it('Should revert on deposit if there is no such allowance for sender', async () => {
     const vaultContractWithSigner = vaultContract.connect(wallet);
     const amountToDeposit = await withDecimals(5, tokenContract);
-    await expect(vaultContractWithSigner.deposit(amountToDeposit)).to.be.revertedWith('SafeERC20: low-level call failed');
+    await expect(vaultContractWithSigner.deposit(amountToDeposit)).to.be.revertedWith('string');
   });
 
   it('Should mint vault shares as 1:1 for sender after the first deposit', async () => {
@@ -115,5 +115,22 @@ describe('Vault', function () {
 
     const walletSharesAfter = await vaultContract.balanceOf(wallet.address);
     expect(walletSharesAfter.eq(0)).to.be.true;
+  });
+
+  it.only('Should return assets after the withdrawal', async () => {
+    const vaultContractWithSigner = vaultContract.connect(wallet);
+    const tokenContractWithSigner = tokenContract.connect(wallet);
+
+    const amountToDeposit = await withDecimals(5, tokenContract);
+    await tokenContractWithSigner.approve(vaultContract.address, amountToDeposit);
+    await vaultContractWithSigner.deposit(amountToDeposit);
+
+    const walletBalanceBeforeWithdrawal = await tokenContractWithSigner.balanceOf(wallet.address);
+
+    await vaultContractWithSigner.withdraw(amountToDeposit);
+
+    const walletBalanceAfterWithdrawal = await tokenContractWithSigner.balanceOf(wallet.address);
+
+    expect(+walletBalanceAfterWithdrawal).to.be.greaterThanOrEqual(+walletBalanceBeforeWithdrawal);
   });
 });

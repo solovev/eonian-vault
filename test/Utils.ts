@@ -1,6 +1,6 @@
 import { MockContract } from '@defi-wonderland/smock';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { BaseContract, BigNumber, BigNumberish } from 'ethers';
+import { BaseContract, BigNumber, BigNumberish, ContractTransaction } from 'ethers';
 import { ethers, network } from 'hardhat';
 import { forkConfig } from '../hardhat.config';
 import { IERC20Metadata } from '../typechain-types';
@@ -108,3 +108,15 @@ export const resetBlockchainAfterEach = (done: VoidFunction) => {
     .then(() => done())
     .catch(done);
 };
+
+export async function getWithdrawEvent(txn: ContractTransaction): Promise<[number, number]> {
+  const receipt = await txn.wait();
+  if (!receipt) {
+    return [-1, -1];
+  }
+  const event = receipt.events?.find((event) => event.event === 'Withdraw');
+  if (!event) {
+    return [-1, -1];
+  }
+  return event.args as [number, number];
+}
